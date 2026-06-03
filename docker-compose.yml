@@ -35,7 +35,8 @@ services:
       WANTED_GID: ${WANTED_GID}
       HERMES_WEBUI_HOST: 0.0.0.0
       HERMES_WEBUI_PORT: 8787
-      HERMES_WEBUI_STATE_DIR: /data
+      HERMES_HOME: /home/hermeswebui/.hermes
+      HERMES_WEBUI_STATE_DIR: /home/hermeswebui/.hermes/webui
       HERMES_WEBUI_DEFAULT_WORKSPACE: /workspace
       HERMES_WEBUI_PASSWORD: ${HERMES_WEBUI_PASSWORD}
       HERMES_WEBUI_AGENT_DIR: /opt/hermes-agent
@@ -44,7 +45,6 @@ services:
     volumes:
       - hermes_home:/home/hermeswebui/.hermes
       - hermes_workspace:/workspace
-      - hermes_webui_data:/data
     ports:
       - "8787:8787"
     networks:
@@ -59,7 +59,6 @@ services:
 volumes:
   hermes_home:
   hermes_workspace:
-  hermes_webui_data:
 
 networks:
   dokploy-network:
