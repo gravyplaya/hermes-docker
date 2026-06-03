@@ -50,7 +50,7 @@ services:
       - dokploy-network
     labels:
       - traefik.enable=true
-      - traefik.http.routers.hermes-webui.rule=Host(`hermes.dok.maybeitshere.com`)
+      - traefik.http.routers.hermes-webui.rule=Host(`hermes.dok.tavonni.com`)
       - traefik.http.routers.hermes-webui.entrypoints=websecure
       - traefik.http.routers.hermes-webui.tls=true
       - traefik.http.services.hermes-webui.loadbalancer.server.port=8787
