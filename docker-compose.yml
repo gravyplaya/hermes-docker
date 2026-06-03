@@ -1,0 +1,64 @@
+version: "3.9"
+
+services:
+  hermes-agent:
+    image: nousresearch/hermes-agent:latest
+    container_name: hermes-agent
+    restart: unless-stopped
+    stdin_open: true
+    tty: true
+    environment:
+      HERMES_AUTH_TOKEN: ${HERMES_AUTH_TOKEN}
+      OPENROUTER_API_KEY: ${OPENROUTER_API_KEY}
+      API_SERVER_ENABLED: "true"
+      API_SERVER_KEY: ${API_SERVER_KEY}
+      API_SERVER_HOST: 0.0.0.0
+      API_SERVER_PORT: 8642
+    volumes:
+      - hermes_home:/root/.hermes
+      - hermes_workspace:/workspace
+    ports:
+      - "8642:8642"
+    networks:
+      - dokploy-network
+
+  hermes-webui:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: hermes-webui
+    restart: unless-stopped
+    depends_on:
+      - hermes-agent
+    environment:
+      WANTED_UID: ${WANTED_UID}
+      WANTED_GID: ${WANTED_GID}
+      HERMES_WEBUI_HOST: 0.0.0.0
+      HERMES_WEBUI_PORT: 8787
+      HERMES_WEBUI_STATE_DIR: /home/hermeswebui/.hermes/webui
+      HERMES_WEBUI_DEFAULT_WORKSPACE: /workspace
+      HERMES_WEBUI_PASSWORD: ${HERMES_WEBUI_PASSWORD}
+      HERMES_WEBUI_AGENT_DIR: /opt/hermes-agent
+      HERMES_SKIP_CHMOD: ${HERMES_SKIP_CHMOD}
+      HERMES_HOME_MODE: ${HERMES_HOME_MODE}
+    volumes:
+      - hermes_home:/home/hermeswebui/.hermes
+      - hermes_workspace:/workspace
+    ports:
+      - "8787:8787"
+    networks:
+      - dokploy-network
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.hermes-webui.rule=Host(`hermes.dok.maybeitshere.com`)
+      - traefik.http.routers.hermes-webui.entrypoints=websecure
+      - traefik.http.routers.hermes-webui.tls=true
+      - traefik.http.services.hermes-webui.loadbalancer.server.port=8787
+
+volumes:
+  hermes_home:
+  hermes_workspace:
+
+networks:
+  dokploy-network:
+    external: true
